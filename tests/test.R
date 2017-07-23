@@ -125,7 +125,8 @@ svyby(
 svyratio( 
 	numerator = ~ ak10_p , 
 	denominator = ~ ak3_p1 , 
-	chis_design 
+	chis_design ,
+	na.rm = TRUE
 )
 sub_chis_design <- subset( chis_design , agecat == "4 - senior" )
 svymean( ~ povll2_p , sub_chis_design )
