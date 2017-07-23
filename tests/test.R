@@ -93,15 +93,15 @@ svyby( ~ one , ~ hlthcat , chis_design , svytotal )
 svymean( ~ povll2_p , chis_design )
 
 svyby( ~ povll2_p , ~ hlthcat , chis_design , svymean )
-svymean( ~ agecat , chis_design )
+svymean( ~ agecat , chis_design , na.rm = TRUE )
 
-svyby( ~ agecat , ~ hlthcat , chis_design , svymean )
+svyby( ~ agecat , ~ hlthcat , chis_design , svymean , na.rm = TRUE )
 svytotal( ~ povll2_p , chis_design )
 
 svyby( ~ povll2_p , ~ hlthcat , chis_design , svytotal )
-svytotal( ~ agecat , chis_design )
+svytotal( ~ agecat , chis_design , na.rm = TRUE )
 
-svyby( ~ agecat , ~ hlthcat , chis_design , svytotal )
+svyby( ~ agecat , ~ hlthcat , chis_design , svytotal , na.rm = TRUE )
 svyquantile( ~ povll2_p , chis_design , 0.5 )
 
 svyby( 
