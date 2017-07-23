@@ -20,32 +20,32 @@ options( survey.replicates.mse = TRUE )
 
 library(survey)
 
-child <- readRDS( file.path( getwd() , "2015/child.rds" )
+child <- readRDS( file.path( getwd() , "2015/child.rds" ) )
 
 child$ak3_p1 <- child$ak10_p <- NA
 child$agecat <- "1 - child"
 child$no_usual_source_of_care <- as.numeric( child$cd1 == 2 )
 
-# rename the four-category (excellent / very good / good / fair+poor) variable over to `hlthcat`
+# four-category srhs (excellent / very good / good / fair+poor)
 child$hlthcat <- child$ca6_p1
 
 # load adolescents ages 12-17
-teen <- readRDS( file.path( getwd() , "2015/teen.rds" )
+teen <- readRDS( file.path( getwd() , "2015/teen.rds" ) )
 
 teen$ak3_p1 <- teen$ak10_p <- NA
 teen$agecat <- "2 - adolescent"
 teen$no_usual_source_of_care <- as.numeric( teen$tf1 == 2 )
 
-# rename the four-category (excellent / very good / good / fair+poor) variable over to `hlthcat`
+# four-category srhs (excellent / very good / good / fair+poor)
 teen$hlthcat <- teen$tb1_p1
 
 # load adults ages 18+
-adult <- readRDS( file.path( getwd() , "2015/adult.rds" )
+adult <- readRDS( file.path( getwd() , "2015/adult.rds" ) )
 
 adult$agecat <- ifelse( adult$srage_p1 >= 65 , "4 - senior" , "3 - adult" )
 adult$no_usual_source_of_care <- as.numeric( adult$ah1 == 2 )
 
-# recode the five-category variable into four categories (condensing fair+poor)
+# four-category srhs (excellent / very good / good / fair+poor)
 adult$hlthcat <- c( 1 , 2 , 3 , 4 , 4 )[ adult$ab1 ]
 
 # construct a character vector with only the variables needed for the analysis
