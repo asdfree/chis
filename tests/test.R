@@ -62,8 +62,17 @@ chis_df <-
 	)
 
 # remove labelled classes
-chis_df[ , ] <- 
-	sapply( chis_df[ , ] , as.numeric )
+labelled_cols <- 
+	sapply( 
+		chis_df , 
+		function( w ) class( w ) == 'labelled' 
+	)
+
+chis_df[ labelled_cols ] <- 
+	sapply( 
+		chis_df[ labelled_cols ] , 
+		as.numeric
+	)
 
 chis_design <- 
 	svrepdesign( 
@@ -93,15 +102,15 @@ svyby( ~ one , ~ hlthcat , chis_design , svytotal )
 svymean( ~ povll2_p , chis_design )
 
 svyby( ~ povll2_p , ~ hlthcat , chis_design , svymean )
-svymean( ~ agecat , chis_design , na.rm = TRUE )
+svymean( ~ agecat , chis_design )
 
-svyby( ~ agecat , ~ hlthcat , chis_design , svymean , na.rm = TRUE )
+svyby( ~ agecat , ~ hlthcat , chis_design , svymean )
 svytotal( ~ povll2_p , chis_design )
 
 svyby( ~ povll2_p , ~ hlthcat , chis_design , svytotal )
-svytotal( ~ agecat , chis_design , na.rm = TRUE )
+svytotal( ~ agecat , chis_design )
 
-svyby( ~ agecat , ~ hlthcat , chis_design , svytotal , na.rm = TRUE )
+svyby( ~ agecat , ~ hlthcat , chis_design , svytotal )
 svyquantile( ~ povll2_p , chis_design , 0.5 )
 
 svyby( 
@@ -116,8 +125,7 @@ svyby(
 svyratio( 
 	numerator = ~ ak10_p , 
 	denominator = ~ ak3_p1 , 
-	chis_design ,
-	na.rm = TRUE
+	chis_design 
 )
 sub_chis_design <- subset( chis_design , agecat == "4 - senior" )
 svymean( ~ povll2_p , sub_chis_design )
