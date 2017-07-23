@@ -61,6 +61,10 @@ chis_df <-
 		adult[ vars_to_keep ] 
 	)
 
+# remove labelled classes
+chis_df[ , ] <- 
+	sapply( chis_df[ , ] , as.numeric )
+
 chis_design <- 
 	svrepdesign( 
 		data = chis_df , 
