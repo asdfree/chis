@@ -78,8 +78,7 @@ chis_design <-
 		hlthcat = 
 			factor( hlthcat , 
 				labels = c( 'excellent' , 'very good' , 'good' , 'fair or poor' ) 
-			) ,
-		below_poverty = as.numeric( povll == 1 )
+			)
 	)
 sum( weights( chis_design , "sampling" ) != 0 )
 
