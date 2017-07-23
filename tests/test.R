@@ -18,7 +18,9 @@ library(survey)
 
 child <- readRDS( file.path( getwd() , "2015/child.rds" )
 
+child$ak3_p1 <- child$ak10_p <- NA
 child$agecat <- "1 - child"
+child$no_usual_source_of_care <- as.numeric( child$cd1 == 2 )
 
 # rename the four-category (excellent / very good / good / fair+poor) variable over to `hlthcat`
 child$hlthcat <- child$ca6_p1
@@ -26,7 +28,9 @@ child$hlthcat <- child$ca6_p1
 # load adolescents ages 12-17
 teen <- readRDS( file.path( getwd() , "2015/teen.rds" )
 
+teen$ak3_p1 <- teen$ak10_p <- NA
 teen$agecat <- "2 - adolescent"
+teen$no_usual_source_of_care <- as.numeric( teen$tf1 == 2 )
 
 # rename the four-category (excellent / very good / good / fair+poor) variable over to `hlthcat`
 teen$hlthcat <- teen$tb1_p1
@@ -35,12 +39,16 @@ teen$hlthcat <- teen$tb1_p1
 adult <- readRDS( file.path( getwd() , "2015/adult.rds" )
 
 adult$agecat <- ifelse( adult$srage_p1 >= 65 , "4 - senior" , "3 - adult" )
+adult$no_usual_source_of_care <- as.numeric( adult$ah1 == 2 )
 
 # recode the five-category variable into four categories (condensing fair+poor)
 adult$hlthcat <- c( 1 , 2 , 3 , 4 , 4 )[ adult$ab1 ]
 
 # construct a character vector with only the variables needed for the analysis
-vars_to_keep <- c( grep( "rakedw" , names( adult ) , value = TRUE ) , 'hlthcat' , 'agecat' )
+vars_to_keep <- 
+	c( grep( "rakedw" , names( adult ) , value = TRUE ) , 
+		'hlthcat' , 'agecat' , 'ak3_p1' , 'ak10_p' ,
+		'povll2_p' , 'no_usual_source_of_care' )
 
 chis_df <- 
 	rbind( 
@@ -66,7 +74,8 @@ chis_design <-
 		hlthcat = 
 			factor( hlthcat , 
 				labels = c( 'excellent' , 'very good' , 'good' , 'fair or poor' ) 
-			)
+			) ,
+		below_poverty = as.numeric( povll == 1 )
 	)
 sum( weights( chis_design , "sampling" ) != 0 )
 
@@ -74,39 +83,38 @@ svyby( ~ one , ~ hlthcat , chis_design , unwtd.count )
 svytotal( ~ one , chis_design )
 
 svyby( ~ one , ~ hlthcat , chis_design , svytotal )
-svymean( ~ bmipct , chis_design , na.rm = TRUE )
+svymean( ~ povll2_p , chis_design )
 
-svyby( ~ bmipct , ~ hlthcat , chis_design , svymean , na.rm = TRUE )
+svyby( ~ povll2_p , ~ hlthcat , chis_design , svymean )
 svymean( ~ agecat , chis_design )
 
 svyby( ~ agecat , ~ hlthcat , chis_design , svymean )
-svytotal( ~ bmipct , chis_design , na.rm = TRUE )
+svytotal( ~ povll2_p , chis_design )
 
-svyby( ~ bmipct , ~ hlthcat , chis_design , svytotal , na.rm = TRUE )
+svyby( ~ povll2_p , ~ hlthcat , chis_design , svytotal )
 svytotal( ~ agecat , chis_design )
 
 svyby( ~ agecat , ~ hlthcat , chis_design , svytotal )
-svyquantile( ~ bmipct , chis_design , 0.5 , na.rm = TRUE )
+svyquantile( ~ povll2_p , chis_design , 0.5 )
 
 svyby( 
-	~ bmipct , 
+	~ povll2_p , 
 	~ hlthcat , 
 	chis_design , 
 	svyquantile , 
 	0.5 ,
 	ci = TRUE ,
-	keep.var = TRUE ,
-	na.rm = TRUE
+	keep.var = TRUE 
 )
 svyratio( 
-	numerator = ~ ever_tried_to_quit_cigarettes , 
-	denominator = ~ smoked_cigarettes_past_year , 
+	numerator = ~ ak10_p , 
+	denominator = ~ ak3_p1 , 
 	chis_design ,
 	na.rm = TRUE
 )
-sub_chis_design <- subset( chis_design , qn41 == 1 )
-svymean( ~ bmipct , sub_chis_design , na.rm = TRUE )
-this_result <- svymean( ~ bmipct , chis_design , na.rm = TRUE )
+sub_chis_design <- subset( chis_design , agecat == "4 - senior" )
+svymean( ~ povll2_p , sub_chis_design )
+this_result <- svymean( ~ povll2_p , chis_design )
 
 coef( this_result )
 SE( this_result )
@@ -115,11 +123,10 @@ cv( this_result )
 
 grouped_result <-
 	svyby( 
-		~ bmipct , 
+		~ povll2_p , 
 		~ hlthcat , 
 		chis_design , 
-		svymean ,
-		na.rm = TRUE 
+		svymean 
 	)
 	
 coef( grouped_result )
@@ -127,22 +134,22 @@ SE( grouped_result )
 confint( grouped_result )
 cv( grouped_result )
 degf( chis_design )
-svyvar( ~ bmipct , chis_design , na.rm = TRUE )
+svyvar( ~ povll2_p , chis_design )
 # SRS without replacement
-svymean( ~ bmipct , chis_design , na.rm = TRUE , deff = TRUE )
+svymean( ~ povll2_p , chis_design , deff = TRUE )
 
 # SRS with replacement
-svymean( ~ bmipct , chis_design , na.rm = TRUE , deff = "replace" )
-svyciprop( ~ never_rarely_wore_bike_helmet , chis_design ,
-	method = "likelihood" , na.rm = TRUE )
-svyttest( bmipct ~ never_rarely_wore_bike_helmet , chis_design )
+svymean( ~ povll2_p , chis_design , deff = "replace" )
+svyciprop( ~ no_usual_source_of_care , chis_design ,
+	method = "likelihood" )
+svyttest( povll2_p ~ no_usual_source_of_care , chis_design )
 svychisq( 
-	~ never_rarely_wore_bike_helmet + agecat , 
+	~ no_usual_source_of_care + agecat , 
 	chis_design 
 )
 glm_result <- 
 	svyglm( 
-		bmipct ~ never_rarely_wore_bike_helmet + agecat , 
+		povll2_p ~ no_usual_source_of_care + agecat , 
 		chis_design 
 	)
 
@@ -150,17 +157,9 @@ summary( glm_result )
 library(srvyr)
 chis_srvyr_design <- as_survey( chis_design )
 chis_srvyr_design %>%
-	summarize( mean = survey_mean( bmipct , na.rm = TRUE ) )
+	summarize( mean = survey_mean( povll2_p ) )
 
 chis_srvyr_design %>%
 	group_by( hlthcat ) %>%
-	summarize( mean = survey_mean( bmipct , na.rm = TRUE ) )
-
-unwtd.count( ~ never_rarely_wore_bike_helmet , yrbss_design )
-
-svytotal( ~ one , subset( yrbss_design , !is.na( never_rarely_wore_bike_helmet ) ) )
- 
-svymean( ~ never_rarely_wore_bike_helmet , yrbss_design , na.rm = TRUE )
-
-svyciprop( ~ never_rarely_wore_bike_helmet , yrbss_design , na.rm = TRUE , method = "beta" )
+	summarize( mean = survey_mean( povll2_p ) )
 
