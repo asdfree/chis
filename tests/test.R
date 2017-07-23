@@ -5,12 +5,16 @@ library(lodown)
 # examine all available CHIS microdata files
 chis_cat <-
 	get_catalog( "chis" ,
-		output_dir = file.path( getwd() ) )
+		output_dir = file.path( getwd() ) , 
+		your_username = chis_username , 
+		your_password = chis_password )
 
 # 2015 only
 chis_cat <- subset( chis_cat , year == 2015 )
 # download the microdata to your local computer
 stopifnot( nrow( chis_cat ) > 0 )
+
+
 
 options( survey.replicates.mse = TRUE )
 
