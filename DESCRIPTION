@@ -4,7 +4,7 @@ Title: chis
 Version: 0.1.0
 Author: Anthony Joseph Damico
 Maintainer: Anthony Joseph Damico <ajdamico@gmail.com>
-Description: A continuous integration package, tested on ajdamico/asdfree commit eb672ea19a217c24a8f09bd7adead9e7c75bf687 ajdamico/lodown commit ea4e124f6549ea5b3434dcf0844b92c4abc34cb4
+Description: A continuous integration package, tested on ajdamico/asdfree commit eb672ea19a217c24a8f09bd7adead9e7c75bf687 ajdamico/lodown commit 46e436d64a5934789d57734f6bbf246737f0c593
 License: GPL-3
 Imports: survey, lodown, srvyr
 Encoding: UTF-8
