@@ -16,9 +16,9 @@ chis_cat <-
 # 2014 only
 chis_cat <- subset( chis_cat , year == 2014 )
 # download the microdata to your local computer
-lodown( "chis" , chis_cat , 
-	your_username = chis_username , 
-	your_password = chis_password )
+
+
+
 
 options( survey.replicates.mse = TRUE )
 
