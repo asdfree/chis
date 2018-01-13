@@ -1,4 +1,6 @@
 if ( .Platform$OS.type == 'windows' ) memory.limit( 256000 )
+
+options("lodown.cachaca.savecache"=FALSE)
 chis_username <- Sys.getenv( "chis_username" )
 chis_password <- Sys.getenv( "chis_password" )
 library(lodown)
