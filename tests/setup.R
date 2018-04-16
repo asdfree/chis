@@ -22,8 +22,6 @@ chis_cat <- subset( chis_cat , year == 2014 )
 
 
 
-options( survey.replicates.mse = TRUE )
-
 library(survey)
 
 child <- readRDS( file.path( getwd() , "2014 child.rds" ) )
